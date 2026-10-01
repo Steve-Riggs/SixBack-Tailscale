@@ -29,6 +29,9 @@
   esp-web-install-button { --esp-tools-button-color: var(--accent);
                            --esp-tools-button-text-color: #fff; }
   .steps { color: var(--mute); font-size: .95em; margin-top: 1em; }
+  .note  { text-align: left; font-size: .95em; margin: 1.1em 0 .4em;
+           padding: .7em .9em; border-radius: 6px;
+           background: #fff4e0; border: 1px solid #e9b96e; border-left: 4px solid var(--warn); }
   .screenshot { text-align: center; margin: 1.4em 0; }
   .screenshot img { max-width: 100%; height: auto; border: 1px solid var(--line);
                     border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,.08); }
@@ -49,6 +52,13 @@
 <div class="panel">
   <p style="margin:0 0 1em">Plug your ESP32 board into USB, then:</p>
   <esp-web-install-button manifest="manifest.json"></esp-web-install-button>
+  <p class="note">
+    <b>ESP32-C5 with 16&nbsp;MB flash + PSRAM (e.g. N16R8 module)?</b>
+    Don't use this button &mdash; it installs the C5 image for 4&nbsp;MB boards. That image
+    runs on your board too, but leaves the PSRAM unused and cannot update itself online.
+    Go to the <a href="boards.html"><b>boards page</b></a> instead, click
+    <b>Identify my board</b> and install the <b>C5&nbsp;16&nbsp;MB</b> image.
+  </p>
   <p class="steps">
     Pick the serial port, and the flasher installs SixBack
     <code id="ver">…</code> — the right image for your chip is chosen

@@ -153,8 +153,10 @@
     size and the PSRAM eFuse off the chip and marks the right pair.
     <b>Use the update button only for the variant the device was originally flashed with</b> —
     a device running the 4&nbsp;MB layout keeps using the standard update button until it is
-    re-installed once with this image (settings survive that switch; the storage layout of the
-    settings area is identical).<br>
+    re-installed once with this image. That one re-install is a fresh install: it rewrites the
+    whole flash, so the stick's settings start from scratch (WiFi, speaker list, stored presets).
+    Export each speaker's presets in the Web UI first (<b>⬇&nbsp;Export</b>) to import them
+    afterwards.<br>
     Manual flashing (esptool&nbsp;≥&nbsp;5): <a href="sixback-c5-16mb-factory.bin">factory</a> @0x0 ·
     <a href="sixback-c5-16mb-firmware.bin">firmware</a> @0x10000 ·
     <a href="sixback-c5-16mb-littlefs.bin">littlefs</a> @0x610000

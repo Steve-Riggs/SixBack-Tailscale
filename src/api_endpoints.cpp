@@ -3629,12 +3629,17 @@ void writeOtaStatus_(AsyncWebServerRequest* req) {
 // Der lokale Multipart-Upload (/api/ota) bleibt nutzbar; nur der Online-Pull
 // (Check + Install) wird sauber als "nicht unterstuetzt" gemeldet statt
 // kryptischem "HTTP -1". Siehe ~/.claude/docs/esp32-c5-ota-tls-heap.md
+// Verweis auf boards.html statt der Startseite: deren manifest.json kennt fuer
+// den C5 nur dieses 4-MB-Image. Ein 16-MB-C5, der (versehentlich) auf diesem
+// Image laeuft, wurde von der alten Meldung zurueck auf dasselbe Image geschickt
+// (FHEM 144729, 2026-10-01); die boards-Seite erkennt das Board und fuehrt das
+// C5-16-MB-Image.
 static constexpr const char* kOtaSelfUpdateUnsupportedBody =
     "{\"state\":\"error\","
-    "\"error\":\"Online OTA is not available on the ESP32-C5 (not enough RAM for the TLS download) \\u2014 update via the Web-Flasher at https://sixback.io/\","
+    "\"error\":\"Online OTA is not available in the 4 MB ESP32-C5 build (not enough RAM for the TLS download) \\u2014 update via the Web-Flasher at https://sixback.io/boards.html\","
     "\"current\":\"\",\"latest\":\"\",\"progress\":0,\"total\":0,"
     "\"phase\":\"\",\"phase_idx\":0,\"phase_n\":0,"
-    "\"updater\":\"https://sixback.io/\"}";
+    "\"updater\":\"https://sixback.io/boards.html\"}";
 #endif
 
 void handleOtaUpdateCheck(AsyncWebServerRequest* req) {
