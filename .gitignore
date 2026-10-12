@@ -56,3 +56,12 @@ webflasher/max/manifest*.json
 # (a src/idf_component.yml turns on the IDF component manager for downstream builders)
 src/idf_component.yml
 webflasher/SHA256SUMS.txt
+
+# Combined Arduino / ESP-IDF build
+sdkconfig.*
+!sdkconfig.defaults
+sdkconfig
+sdkconfig.old
+sdkconfig.credentials
+managed_components/
+dependencies.lock

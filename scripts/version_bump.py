@@ -206,7 +206,7 @@ def main():
     new_version  = f"{major}.{minor}.{new_build}"
 
     # Step 1: snapshot working tree under the *previous* version label.
-    if _is_git_repo():
+    if _is_git_repo() and os.getenv("SIXBACK_SKIP_AUTOCOMMIT") != "1":
         if _git_autocommit(prev_version):
             print(f"[version_bump] git snapshot committed @ v{prev_version}")
     else:

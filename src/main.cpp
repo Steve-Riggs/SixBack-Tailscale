@@ -39,6 +39,7 @@
 #include "gabbo_watcher.h"
 #include "ui_auth.h"
 #include "host_settings.h"
+#include "microlink_bridge.h"
 
 static AsyncWebServer boseServer(BOSE_HTTP_PORT);
 static AsyncWebServer uiServer(UI_HTTP_PORT);
@@ -161,6 +162,7 @@ void setup() {
     sixback::ipFailsafeCheck();   // IP-Change-Detection + Auto-Remigrate
     startBoseServer();
     startUiServer();
+    sixback::startMicrolink();
     sixback::healthInit();        // Crash-Counter, Task-WDT, WiFi-/Heap-Watchdog
     sixback::blackboxInit();      // SYSTIMER-Blackbox (nur c6, sonst No-Op)
     sixback::startAutoModeTask(); // No-op wenn NVS-Flag auto-mode disabled

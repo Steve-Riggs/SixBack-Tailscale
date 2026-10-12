@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
 // SixBack — optionaler Zugriffsschutz fuer die Web-UI (Issue #31). Siehe ui_auth.h.
 #include "ui_auth.h"
+#include "microlink_bridge.h"
 
 #include <ArduinoJson.h>
 #include <WebAuthentication.h>   // generateDigestHash() aus ESPAsyncWebServer
@@ -144,7 +145,9 @@ void uiAuthSerialTick() {
         if (ch == '\n' || ch == '\r') {
             line.trim();
             if (line.length()) {
-                if (line.equalsIgnoreCase("auth-reset")) {
+                if (handleMicrolinkSerialCommand(line)) {
+                    // VPN command handled by MicroLink bridge.
+                } else if (line.equalsIgnoreCase("auth-reset")) {
                     uiAuthReset();
                 } else if (line.equalsIgnoreCase("auth-status")) {
                     UiAuthConfig c = uiAuthLoad();
@@ -154,7 +157,7 @@ void uiAuthSerialTick() {
                 }
             }
             line = "";
-        } else if (line.length() < 64) {   // bounded — kein Runaway-Buffer
+        } else if (line.length() < 200) {   // bounded — kein Runaway-Buffer
             line += ch;
         }
     }
