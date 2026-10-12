@@ -483,6 +483,14 @@ void factoryResetWifi() {
     Serial.println("[wifi] NVS credentials erased");
 }
 
+Stream* adminUsbSerial() {
+#if SIXBACK_IMPROV_DUAL
+    return &usbCdc;
+#else
+    return nullptr;
+#endif
+}
+
 void wifiProvisioningTick() {
     improvTickInternal();
 }

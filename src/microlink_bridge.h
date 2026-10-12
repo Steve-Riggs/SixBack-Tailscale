@@ -3,5 +3,6 @@
 
 namespace sixback {
     void startMicrolink();
-    bool handleMicrolinkSerialCommand(const String& line);
+    void microlinkTick();
+    bool handleMicrolinkSerialCommand(const String& line, Stream& output);
 }

@@ -178,6 +178,7 @@ void setup() {
 
 void loop() {
     sixback::wifiProvisioningTick();
+    sixback::microlinkTick();
     sixback::healthTick();         // Task-WDT-feed, WiFi/Heap-Watchdog, Self-Ping
     sixback::ipFailsafeTick();     // gearmter Recheck (GOT_IP / Retry) als One-Shot-Task
     sixback::spotify::refreshTick(); // proaktiver Access-Token-Refresh, 60s-Rate-Limit intern

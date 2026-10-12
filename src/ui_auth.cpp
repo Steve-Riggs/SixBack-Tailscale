@@ -126,40 +126,54 @@ void uiAuthReset() {
     Serial.println("[uiauth] reset — web-UI password protection cleared");
 }
 
+
+namespace {
+void pumpAdminSerial(Stream& port, String& buffer) {
+    while (port.available() > 0) {
+        int received = port.read();
+        if (received < 0) break;
+
+        char ch = (char)received;
+        if (ch == '\n' || ch == '\r') {
+            buffer.trim();
+            if (buffer.length()) {
+                if (handleMicrolinkSerialCommand(buffer, port)) {
+                    // Handled by MicroLink.
+                } else if (buffer.equalsIgnoreCase("auth-reset")) {
+                    uiAuthReset();
+                    port.println("[uiauth] reset requested");
+                } else if (buffer.equalsIgnoreCase("auth-status")) {
+                    UiAuthConfig c = uiAuthLoad();
+                    port.printf("[uiauth] enabled=%d configured=%d\n",
+                        (int)c.enabled,
+                        (int)(c.username.length() && c.ha1.length()));
+                }
+            }
+            buffer = "";
+        } else if (buffer.length() < 200) {
+            buffer += ch;
+        }
+    }
+}
+} // namespace
+
 void uiAuthSerialTick() {
-    // Deferred-apply: ausserhalb des Web-Handler-Kontexts scharfschalten,
-    // nachdem der ausloesende Request abgeschlossen ist (siehe g_pendingApply).
     if (g_pendingApply) {
         g_pendingApply = false;
         apply_(uiAuthLoad());
     }
 
-    // Solange Improv das UART bedient, NICHT mitlesen (sonst klauen wir
-    // Improv-Frames). Nach Schliessen des Windows ist das UART frei.
+    // Improv owns both serial transports during provisioning.
     if (improvIsActive()) return;
-    if (!Serial.available()) return;
 
-    static String line;
-    while (Serial.available()) {
-        char ch = (char)Serial.read();
-        if (ch == '\n' || ch == '\r') {
-            line.trim();
-            if (line.length()) {
-                if (handleMicrolinkSerialCommand(line)) {
-                    // VPN command handled by MicroLink bridge.
-                } else if (line.equalsIgnoreCase("auth-reset")) {
-                    uiAuthReset();
-                } else if (line.equalsIgnoreCase("auth-status")) {
-                    UiAuthConfig c = uiAuthLoad();
-                    Serial.printf("[uiauth] enabled=%d user='%s' configured=%d\n",
-                                  (int)c.enabled, c.username.c_str(),
-                                  (int)(c.username.length() && c.ha1.length()));
-                }
-            }
-            line = "";
-        } else if (line.length() < 200) {   // bounded — kein Runaway-Buffer
-            line += ch;
-        }
+    static String uartLine;
+    static String usbLine;
+
+    pumpAdminSerial(Serial, uartLine);
+
+    Stream* usb = adminUsbSerial();
+    if (usb && usb != &Serial) {
+        pumpAdminSerial(*usb, usbLine);
     }
 }
 

@@ -44,6 +44,7 @@ void wifiProvisioningTick();
 
 // Status fuer /api/status: ist das Improv-Window noch offen?
 bool improvIsActive();
+Stream* adminUsbSerial();
 
 // Verbleibende Sekunden bis das Idle-Window schliesst (0 wenn zu / nicht aktiv).
 uint32_t improvWindowRemainingS();

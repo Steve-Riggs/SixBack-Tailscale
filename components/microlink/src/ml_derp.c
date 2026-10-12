@@ -20,6 +20,7 @@
  */
 
 #include "microlink_internal.h"
+#include "esp_heap_caps.h"
 #include "esp_log.h"
 #include "esp_timer.h"
 #include "esp_random.h"
@@ -504,6 +505,30 @@ void ml_derp_tx_task(void *arg) {
                      (unsigned long)frames_rx, (unsigned long)frames_tx,
                      (unsigned long)uxTaskGetStackHighWaterMark(NULL));
             last_heartbeat_ms = loop_start;
+        }
+
+
+        /* SixBack RAM diagnostics: report every 30 seconds. */
+        static uint64_t last_ram_diag_ms = 0;
+
+        if (loop_start - last_ram_diag_ms >= 30000 &&
+            ml->net_io_task && ml->derp_tx_task &&
+            ml->coord_task && ml->wg_mgr_task) {
+
+            last_ram_diag_ms = loop_start;
+
+            ESP_LOGW(TAG,
+                "[RAMDIAG] free=%u min=%u largest=%u",
+                (unsigned)heap_caps_get_free_size(MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT),
+                (unsigned)heap_caps_get_minimum_free_size(MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT),
+                (unsigned)heap_caps_get_largest_free_block(MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT));
+
+            ESP_LOGW(TAG,
+                "[STACKDIAG] net=%u derp=%u coord=%u wg=%u",
+                (unsigned)uxTaskGetStackHighWaterMark(ml->net_io_task),
+                (unsigned)uxTaskGetStackHighWaterMark(ml->derp_tx_task),
+                (unsigned)uxTaskGetStackHighWaterMark(ml->coord_task),
+                (unsigned)uxTaskGetStackHighWaterMark(ml->wg_mgr_task));
         }
 
         /* ---- Periodic status logging (always, even when disconnected) ---- */
